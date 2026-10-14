@@ -1,50 +1,27 @@
-﻿# Endovision
- # EndoVision: Uncertainty-Aware Endometriosis Image Classification
+﻿# EndoVision: Uncertainty-Aware Endometriosis Image Classification
 
-EndoVision is a deep learning-based medical image classification project that uses **EfficientNetB0 and Transfer Learning** to classify images into two categories: endometriosis and non-endometriosis.
+EndoVision is a deep learning-based medical image classification project that uses **EfficientNetB0 and Transfer Learning** to classify images into two categories: endometriosis and no endometriosis.
 
-The project integrates **Monte Carlo Dropout** for uncertainty estimation and **Grad-CAM** for visual explainability. Images with high predictive uncertainty are flagged for manual review.
+The project combines **Monte Carlo Dropout** for predictive uncertainty estimation and **Grad-CAM** for visual explainability. The system can flag high-uncertainty predictions for manual review, supporting a more interpretable research workflow.
 
 ## Features
 
-- Binary classification of endometriosis and non-endometriosis images
-- Pretrained EfficientNetB0 for feature extraction
-- Transfer learning and model fine-tuning
+- Binary classification of endometriosis and no-endometriosis images
+- Transfer learning using pretrained EfficientNetB0
 - Image preprocessing and data augmentation
+- Model training and fine-tuning
 - Monte Carlo Dropout for uncertainty estimation
-- Uncertainty-based manual review flagging
+- Uncertainty-based flagging for manual review
 - Grad-CAM heatmaps for visual interpretation
-- Model evaluation using classification metrics
-- Export of per-image predictions and uncertainty scores to CSV
-
-## Project Workflow
-
-1. Load the labeled image dataset.
-2. Resize images to 224 × 224 pixels.
-3. Split the dataset into training, validation, and testing sets.
-4. Apply data augmentation to training images.
-5. Train the EfficientNetB0 classification model.
-6. Fine-tune selected layers of the pretrained model.
-7. Evaluate the trained model on the test dataset.
-8. Perform 30 stochastic predictions using Monte Carlo Dropout.
-9. Calculate mean prediction probability and uncertainty.
-10. Flag high-uncertainty images for manual review.
-11. Generate Grad-CAM visualizations.
-12. Save evaluation metrics and predictions.
+- Confusion matrix and classification report
+- Evaluation using accuracy, precision, recall, F1-score, and ROC-AUC
+- Export of image-level predictions and uncertainty scores to CSV
 
 ## Dataset
 
-The dataset contains approximately **1,025 images** across two classes.
-
-| Class | Number of Images |
-|---|---:|
-| Endometriosis | 533 |
-| No Endometriosis | 492 |
-| **Total** | **1,025** |
+The project uses a labeled image dataset containing two classes.
 
 ### Dataset Structure
-
-Organize the dataset as follows:
 
 ```text
 dataset/
@@ -58,7 +35,7 @@ dataset/
     └── ...
 ```
 
-Update the dataset path in the configuration file according to your system.
+Update the dataset path in the configuration file according to your local setup.
 
 ## Dataset Split
 
@@ -68,68 +45,59 @@ Update the dataset path in the configuration file according to your system.
 | Validation | 15% |
 | Testing | 25% |
 
-The validation set is used for model selection and uncertainty-threshold selection. The test set is reserved for final evaluation. If multiple images belong to the same patient, patient-level splitting should be used when patient identifiers are available.
+The validation set is used for model selection and, where implemented, uncertainty-threshold selection. The test set is reserved for final performance evaluation.
+
+If multiple images originate from the same patient or surgical procedure, patient-level splitting should be considered to reduce the risk of data leakage.
 
 ## Model Architecture
 
-The project uses **EfficientNetB0**, pretrained on ImageNet, as the feature extraction backbone.
+EndoVision uses **EfficientNetB0**, pretrained on ImageNet, as the feature extraction backbone.
 
-The classification architecture consists of:
+The classification pipeline consists of:
 
-- EfficientNetB0 feature extractor
-- Global Average Pooling
-- Dropout layer
-- Sigmoid output layer
+1. EfficientNetB0 feature extraction
+2. Global Average Pooling
+3. Dropout layer
+4. Sigmoid classification output
 
-Training is performed in stages, beginning with the classification head and followed by fine-tuning selected upper layers.
+Training is performed in stages, beginning with the classification head and followed by fine-tuning selected layers of the pretrained network.
 
 ## Uncertainty Estimation
 
-Monte Carlo Dropout performs multiple stochastic forward passes with dropout enabled during inference.
+Monte Carlo Dropout estimates predictive variability by performing multiple stochastic forward passes with dropout enabled during inference.
 
-The system calculates:
+The system can calculate:
 
-- **Mean Probability:** Average predicted probability across repeated passes.
-- **Uncertainty Score:** Standard deviation of predicted probabilities.
-- **Manual Review Flag:** Identifies predictions whose uncertainty exceeds a threshold selected using validation data.
+- **Mean probability:** Average predicted probability across repeated passes.
+- **Uncertainty score:** Standard deviation of the predicted probabilities.
+- **Manual-review flag:** Identifies predictions that exceed a threshold selected using validation data.
 
-The current configuration uses 30 stochastic predictions and a validation uncertainty threshold based on the 90th percentile.
+The current project configuration uses 30 stochastic predictions and a threshold based on the 90th percentile of validation uncertainty, if enabled in the implementation.
 
-Uncertainty estimation does not guarantee prediction correctness.
+Uncertainty is an estimate of predictive variability and does not guarantee that a prediction is correct or incorrect.
 
 ## Grad-CAM Explainability
 
 Grad-CAM generates a heatmap highlighting image regions that contribute to the model's classification score.
 
-These visualizations help examine model behavior and improve interpretability. Grad-CAM is not a lesion segmentation method and does not confirm the presence of endometriosis.
+These heatmaps help users inspect the model's visual attention and understand its predictions.
 
-## Evaluation Metrics
-
-The model can be evaluated using:
-
-- Accuracy
-- Precision
-- Recall
-- F1-score
-- ROC-AUC
-- Balanced Accuracy
-- Prediction Coverage
-- Accuracy on predictions not flagged for manual review
-
-Report the measured results from your final held-out test evaluation.
+**Note:** Grad-CAM is not a lesion segmentation method and does not confirm the presence or location of endometriosis.
 
 ## Results
 
-Update this table with your actual test results after running the model.
+The model was evaluated on a held-out test set of **256 images**, achieving an accuracy of **92.19%**.
 
-| Metric | Result |
-|---|---|
-| Test Accuracy | Add measured value |
-| Precision | Add measured value |
-| Recall | Add measured value |
-| F1-score | Add measured value |
-| ROC-AUC | Add measured value |
-| Balanced Accuracy | Add measured value |
+### Overall Performance
+
+| Metric | Score |
+|---|---:|
+| Accuracy | 92.19% |
+| Macro-average Precision | 92.16% |
+| Macro-average Recall | 92.21% |
+| Endometriosis F1-score | 92.48% |
+| ROC-AUC | 0.9819 |
+
 
 ## Technologies Used
 
@@ -150,14 +118,9 @@ git clone https://github.com/Kumaaragurubaran-del/Endovision.git
 cd Endovision
 ```
 
-Install dependencies:
+Install the dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
-
-
-
-
-
 
