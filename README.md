@@ -93,8 +93,8 @@ The model was evaluated on a held-out test set of **256 images**, achieving an a
 | Metric | Score |
 |---|---:|
 | Accuracy | 92.19% |
-| Macro-average Precision | 92.16% |
-| Macro-average Recall | 92.21% |
+| Precision | 92.16% |
+| Recall | 92.21% |
 | Endometriosis F1-score | 92.48% |
 | ROC-AUC | 0.9819 |
 
@@ -123,4 +123,6 @@ Install the dependencies:
 ```bash
 pip install -r requirements.txt
 ```
+
+
 
